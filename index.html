@@ -1,45 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>LIFF Test</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
-<style>
-body {
-  font-family: sans-serif;
-  padding: 30px;
-}
-</style>
-</head>
-
-<body>
-
-<h2 id="name">載入中...</h2>
-
 <script>
 const liffId = "2008996338-0gw2Kj6n";
+const apiUrl = "https://script.google.com/macros/s/AKfycbz-EVDHnNhcgVMIj-B5Qt7P-CAllJEKjUkTkSHUH6_nAPAecfbJB7zW_sD-C_sgUimj/exec";
 
 async function main() {
-  try {
-    await liff.init({ liffId });
+  await liff.init({ liffId });
 
-    const profile = await liff.getProfile();
+  const profile = await liff.getProfile();
 
-    document.getElementById("name").innerText =
-      "你好 " + profile.displayName;
+  document.getElementById("name").innerHTML = `
+    你好 ${profile.displayName}<br><br>
+    <button onclick="clock()">打卡</button>
+    <p id="msg"></p>
+  `;
 
-  } catch (e) {
-    document.getElementById("name").innerText =
-      "錯誤：" + e.message;
-    console.error(e);
-  }
+  window.clock = async () => {
+    document.getElementById("msg").innerText = "送出中...";
+
+    await fetch(apiUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        userId: profile.userId,
+        name: profile.displayName
+      })
+    });
+
+    document.getElementById("msg").innerText = "✅ 打卡完成";
+  };
 }
 
 main();
 </script>
-
-</body>
-</html>
