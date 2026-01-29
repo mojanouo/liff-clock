@@ -1,25 +1,76 @@
-<script>
-const liffId = "2008996338-0gw2Kj6n";
-alert("腳本開始執行");   // <- 加這行
-async function main() {
-  await liff.init({ liffId });
-  const profile = await liff.getProfile();
-  document.getElementById("name").innerHTML = `
-    你好 ${profile.displayName}<br><br>
-    <button onclick="clock()">打卡</button>
-    <p id="msg"></p>
-  `;
-  window.clock = async () => {
-    document.getElementById("msg").innerText = "送出中...";
-    await fetch("https://script.google.com/macros/s/AKfycbz-EVDHnNhcgVMIj-B5Qt7P-CAllJEKjUkTkSHUH6_nAPAecfbJB7zW_sD-C_sgUimj/exec", {
-      method: "POST",
-      body: JSON.stringify({
-        userId: profile.userId,
-        name: profile.displayName
-      })
-    });
-    document.getElementById("msg").innerText = "✅ 打卡完成";
-  };
-}
-main();
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIFF 打卡測試</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h2 { color: #333; }
+    #status { color: blue; white-space: pre-line; }
+    button { font-size: 16px; padding: 8px 16px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2 id="name">載入中...</h2>
+  <p id="status">初始化狀態：尚未開始</p>
+
+  <script>
+    const liffId = "2008996338-0gw2Kj6n";
+    const apiUrl = "https://script.google.com/macros/s/AKfycbz-EVDHnNhcgVMIj-B5Qt7P-CAllJEKjUkTkSHUH6_nAPAecfbJB7zW_sD-C_sgUimj/exec";
+
+    async function main() {
+      const statusEl = document.getElementById("status");
+      const nameEl = document.getElementById("name");
+
+      try {
+        statusEl.innerText = "LIFF SDK 載入中...";
+        await liff.init({ liffId });
+
+        statusEl.innerText = "LIFF 初始化成功！正在取得使用者資料...";
+        const profile = await liff.getProfile();
+
+        nameEl.innerHTML = `
+          你好 ${profile.displayName}<br><br>
+          <button id="clockBtn">打卡</button>
+          <p id="msg"></p>
+        `;
+        statusEl.innerText = "歡迎使用打卡系統！";
+
+        document.getElementById("clockBtn").onclick = async () => {
+          const msgEl = document.getElementById("msg");
+          msgEl.innerText = "送出中...";
+
+          try {
+            const res = await fetch(apiUrl, {
+              method: "POST",
+              body: JSON.stringify({
+                userId: profile.userId,
+                name: profile.displayName
+              })
+            });
+
+            const data = await res.json();
+            if (data.status === "ok") {
+              msgEl.innerText = "✅ 打卡完成";
+            } else {
+              msgEl.innerText = "❌ 打卡失敗，請稍後再試";
+            }
+          } catch (err) {
+            msgEl.innerText = "❌ 發生錯誤：" + err.message;
+            console.error(err);
+          }
+        };
+
+      } catch (err) {
+        nameEl.innerText = "載入失敗";
+        statusEl.innerText = "錯誤訊息: " + (err.message || JSON.stringify(err));
+        console.error(err);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
