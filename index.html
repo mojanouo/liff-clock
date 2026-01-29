@@ -5,17 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LIFF 打卡 QR Code</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <!-- QRCode.js library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <style>
     body { font-family: Arial; padding: 20px; }
-    #qrcode { margin-top: 20px; }
+    h2 { color: #333; font-size: 28px; margin-bottom: 10px; }        /* 大字 */
+    .time { font-size: 18px; font-weight: normal; margin-bottom: 5px; } /* 中字，不粗體 */
+    .instruction { font-size: 18px; font-weight: normal; margin-bottom: 20px; } /* 中字，不粗體 */
     #status { white-space: pre-line; color: blue; }
-    h2 { color: #333; }
+    #qrcode { margin-top: 20px; }
   </style>
 </head>
 <body>
   <h2 id="name">載入中...</h2>
+  <p id="time" class="time"></p>
+  <p id="instruction" class="instruction"></p>
   <p id="status">初始化中...</p>
   <div id="qrcode"></div>
 
@@ -24,6 +27,8 @@
 
     async function main() {
       const nameEl = document.getElementById("name");
+      const timeEl = document.getElementById("time");
+      const instructionEl = document.getElementById("instruction");
       const statusEl = document.getElementById("status");
       const qrcodeEl = document.getElementById("qrcode");
 
@@ -41,11 +46,9 @@
         const qrData = profile.userId + "_" + timestamp;
 
         // 更新頁面文字
-        nameEl.innerHTML = `
-          你好 ${profile.displayName}<br>
-          現在時間是 ${timeStr}<br>
-          請掃描下列 QR Code 進行打卡
-        `;
+        nameEl.innerText = `你好 ${profile.displayName}`;
+        timeEl.innerText = `現在時間是 ${timeStr}`;
+        instructionEl.innerText = "請掃描下列 QR Code 進行打卡";
 
         // 產生 QR Code
         new QRCode(qrcodeEl, {
