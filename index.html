@@ -1,32 +1,25 @@
 <script>
 const liffId = "2008996338-0gw2Kj6n";
-const apiUrl = "https://script.google.com/macros/s/AKfycbz-EVDHnNhcgVMIj-B5Qt7P-CAllJEKjUkTkSHUH6_nAPAecfbJB7zW_sD-C_sgUimj/exec";
-
+alert("腳本開始執行");   // <- 加這行
 async function main() {
   await liff.init({ liffId });
-
   const profile = await liff.getProfile();
-
   document.getElementById("name").innerHTML = `
     你好 ${profile.displayName}<br><br>
     <button onclick="clock()">打卡</button>
     <p id="msg"></p>
   `;
-
   window.clock = async () => {
     document.getElementById("msg").innerText = "送出中...";
-
-    await fetch(apiUrl, {
+    await fetch("貼你的GAS URL", {
       method: "POST",
       body: JSON.stringify({
         userId: profile.userId,
         name: profile.displayName
       })
     });
-
     document.getElementById("msg").innerText = "✅ 打卡完成";
   };
 }
-
 main();
 </script>
