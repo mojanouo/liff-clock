@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>LIFF Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+<style>
+body {
+  font-family: sans-serif;
+  padding: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<h2 id="name">載入中...</h2>
+
+<script>
+const liffId = "2008996338-0gw2Kj6n";
+
+async function main() {
+  try {
+    await liff.init({ liffId });
+
+    const profile = await liff.getProfile();
+
+    document.getElementById("name").innerText =
+      "你好 " + profile.displayName;
+
+  } catch (e) {
+    document.getElementById("name").innerText =
+      "錯誤：" + e.message;
+    console.error(e);
+  }
+}
+
+main();
+</script>
+
+</body>
+</html>
